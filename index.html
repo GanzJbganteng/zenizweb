@@ -1898,7 +1898,9 @@
         }
         
         // Fungsi bantuan untuk mengirim request GET ke endpoint v2, sesuai dengan contoh curl
-        async function sendVirtusimRequest(action, data = {}) {
+                async function sendVirtusimRequest(action, data = {}) {
+            // GANTI INI DENGAN API KEY-MU YANG BARU: psVPrdMXa9HJlnGUkozfqCIO0cNt1w
+            const VIRTUSIM_API_KEY = 'psVPrdMXa9HJlnGUkozfqCIO0cNt1w';
             const params = new URLSearchParams({
                 api_key: VIRTUSIM_API_KEY,
                 action: action,
@@ -1906,24 +1908,30 @@
             });
             const url = `${VIRTUSIM_ENDPOINT}?${params.toString()}`;
             
-            // FITUR BARU UNTUK DEBUGGING DI HP
-            if (action === 'balance') { // Hanya untuk aksi cek saldo agar tidak terlalu sering muncul
-                alert("URL yang dikirim:\n" + url);
-            }
-            
-            console.log(`[DEBUG] Mengirim API VirtuSIM: ${url}`); // FITUR BARU: LOGGING UNTUK DEBUGGING
+            console.log(`[DEBUG] Mengirim API VirtuSIM: ${url}`);
 
             try {
                 const response = await fetch(url);
                 const result = await response.json();
-                console.log(`[DEBUG] Respon untuk aksi '${action}':`, result); // FITUR BARU: LOGGING UNTUK DEBUGGING
+                
+                // POP-UP UNTUK MENAMPILKAN RESPON DARI SERVER
+                if (action === 'balance') {
+                    if (result.status === true) {
+                        alert("Sukses! Respon dari server:\n" + JSON.stringify(result, null, 2));
+                    } else {
+                        alert("Gagal! Respon dari server:\n" + JSON.stringify(result, null, 2));
+                    }
+                }
+                
+                console.log(`[DEBUG] Respon untuk aksi '${action}':`, result);
                 return result;
             } catch (error) {
                 console.error(`Error saat menghubungi API VirtuSIM v2 untuk aksi '${action}':`, error);
+                alert("Kesalahan Jaringan:\n" + error.message);
                 return { status: false, data: { msg: 'Terjadi kesalahan jaringan atau server.' } };
             }
         }
-        
+
         const virtusimOrderForm = document.getElementById('virtusimOrderForm');
         if(virtusimOrderForm) {
             virtusimOrderForm.addEventListener('submit', async (e) => {
