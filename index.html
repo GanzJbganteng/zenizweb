@@ -839,8 +839,8 @@
             background-color: #c2185b;
         }
 
-        /* --- Styling Video to URL --- */
-        .video-uploader {
+        /* --- UBAH: Styling Media to URL --- */
+        .media-uploader {
             max-width: 600px;
             margin: 2rem auto;
             background-color: var(--card-bg);
@@ -851,24 +851,24 @@
             text-align: center;
         }
 
-        .video-uploader h1 {
+        .media-uploader h1 {
             color: var(--neon-cyan);
             text-shadow: 0 0 10px var(--neon-shadow);
             margin-bottom: 1rem;
         }
 
-        .video-uploader .upload-area {
+        .media-uploader .upload-area {
             display: flex;
             flex-direction: column;
             gap: 1rem;
             margin-bottom: 2rem;
         }
 
-        .video-uploader input[type="file"] {
+        .media-uploader input[type="file"] {
             display: none;
         }
 
-        .video-uploader .custom-file-upload {
+        .media-uploader .custom-file-upload {
             border: 2px dashed var(--neon-cyan);
             padding: 2rem;
             border-radius: 10px;
@@ -876,16 +876,16 @@
             transition: background-color 0.3s;
         }
 
-        .video-uploader .custom-file-upload:hover {
+        .media-uploader .custom-file-upload:hover {
             background-color: var(--light-card-bg);
         }
         
-        .video-uploader .custom-file-upload span {
+        .media-uploader .custom-file-upload span {
             font-size: 1.1rem;
             font-weight: bold;
         }
 
-        .video-uploader .upload-btn {
+        .media-uploader .upload-btn {
             padding: 0.75rem;
             background-color: var(--neon-cyan);
             color: var(--btn-text);
@@ -896,12 +896,12 @@
             transition: all 0.3s ease;
         }
         
-        .video-uploader .upload-btn:hover {
+        .media-uploader .upload-btn:hover {
             background-color: #00b8d4;
             box-shadow: 0 0 15px var(--neon-shadow);
         }
         
-        .video-uploader .progress-bar-container {
+        .media-uploader .progress-bar-container {
             width: 100%;
             height: 10px;
             background-color: var(--light-card-bg);
@@ -911,32 +911,32 @@
             display: none;
         }
 
-        .video-uploader .progress-bar {
+        .media-uploader .progress-bar {
             height: 100%;
             width: 0;
             background-color: var(--neon-cyan);
             transition: width 0.3s ease;
         }
         
-        .video-uploader #uploadResult {
+        .media-uploader #uploadResult {
             margin-top: 2rem;
             text-align: left;
             word-wrap: break-word;
         }
         
-        .video-uploader #uploadResult .result-box {
+        .media-uploader #uploadResult .result-box {
             background-color: var(--light-card-bg);
             padding: 1.5rem;
             border-radius: 10px;
             border: 1px solid var(--neon-cyan);
         }
 
-        .video-uploader #uploadResult .result-box a {
+        .media-uploader #uploadResult .result-box a {
             color: var(--neon-cyan);
             word-break: break-all;
         }
         
-        .video-uploader .status-message {
+        .media-uploader .status-message {
             margin-top: 1rem;
             padding: 1rem;
             border-radius: 8px;
@@ -944,6 +944,99 @@
             color: var(--neon-cyan);
             text-align: center;
             display: none;
+        }
+
+        /* --- TAMBAH: Styling Halaman Riwayat --- */
+        #history {
+            max-width: 800px;
+            margin: 2rem auto;
+            text-align: center;
+        }
+        #history h1 {
+            color: var(--neon-cyan);
+            text-shadow: 0 0 10px var(--neon-shadow);
+            margin-bottom: 2rem;
+        }
+        .history-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .history-item {
+            background-color: var(--card-bg);
+            padding: 1rem;
+            border-radius: 10px;
+            border: 1px solid var(--neon-cyan);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .history-item.tiktok {
+            background-color: #e91e631a;
+            border-color: #e91e63;
+        }
+        .history-item.media {
+            background-color: #00fff21a;
+            border-color: #00fff2;
+        }
+        .history-item .item-header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        .history-item .item-header .type {
+            font-weight: bold;
+            padding: 0.25rem 0.75rem;
+            border-radius: 5px;
+            font-size: 0.8rem;
+        }
+        .history-item.tiktok .item-header .type {
+            background-color: #e91e63;
+        }
+        .history-item.media .item-header .type {
+            background-color: var(--neon-cyan);
+            color: var(--btn-text);
+        }
+        .history-item .item-header .date {
+            font-size: 0.8rem;
+            color: var(--light-text);
+        }
+        .history-item .item-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        .history-item .item-url a {
+            color: var(--neon-cyan);
+            text-decoration: none;
+            word-break: break-all;
+        }
+        .history-item .item-url a:hover {
+            text-decoration: underline;
+        }
+        #clearHistoryBtn {
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background-color: #f44336;
+            color: #fff;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        #clearHistoryBtn:hover {
+            background-color: #d32f2f;
+        }
+        .empty-history {
+            color: var(--light-text);
+            font-style: italic;
         }
 
     </style>
@@ -967,7 +1060,8 @@
         <a href="#suntik-sosmed" class="menu-item"><span class="icon fas fa-share-alt"></span>Suntik Sosmed</a>
         <a href="#alight-motion-preset" class="menu-item"><span class="icon fas fa-film"></span>Preset Alight Motion</a>
         <a href="#tiktok-downloader" class="menu-item"><span class="icon fab fa-tiktok"></span>TikTok Downloader</a>
-        <a href="#video-to-url" class="menu-item"><span class="icon fas fa-link"></span>Video to URL</a>
+        <a href="#media-to-url" class="menu-item"><span class="icon fas fa-link"></span>Media to URL</a>
+        <a href="#history" class="menu-item"><span class="icon fas fa-history"></span>Riwayat</a>
     </div>
     
     <div id="backdrop" class="backdrop"></div>
@@ -1168,18 +1262,18 @@
             </div>
         </div>
         
-        <div id="video-to-url" class="content-section">
-            <div class="video-uploader">
-                <h1>Video to URL</h1>
-                <p>Upload video kamu dan dapatkan URL permanen.</p>
+        <div id="media-to-url" class="content-section">
+            <div class="media-uploader">
+                <h1>Media to URL</h1>
+                <p>Upload file media (video/foto) kamu dan dapatkan URL permanen.</p>
                 <form id="uploadForm" class="upload-area">
-                    <label for="videoFile" class="custom-file-upload">
-                        <span id="fileName">Pilih Video</span>
+                    <label for="mediaFile" class="custom-file-upload">
+                        <span id="fileName">Pilih File Media</span>
                         <br><br>
                         <small>Ukuran maksimal 200MB</small>
                     </label>
-                    <input type="file" id="videoFile" name="video" accept="video/*">
-                    <button type="submit" id="uploadBtn" class="upload-btn">Upload Video</button>
+                    <input type="file" id="mediaFile" name="media" accept="image/*,video/*">
+                    <button type="submit" id="uploadBtn" class="upload-btn">Upload</button>
                 </form>
                 <div class="progress-bar-container">
                     <div class="progress-bar"></div>
@@ -1189,6 +1283,13 @@
             </div>
         </div>
         
+        <div id="history" class="content-section">
+            <h1>Riwayat</h1>
+            <p id="emptyHistoryMessage" class="empty-history">Riwayat masih kosong.</p>
+            <ul id="historyList" class="history-list">
+                </ul>
+            <button id="clearHistoryBtn" style="display: none;">Hapus Semua Riwayat</button>
+        </div>
     </main>
     
     <script>
@@ -1247,6 +1348,11 @@
                     item.classList.add('active');
                 }
             });
+
+            // TAMBAH: Panggil fungsi loadHistory saat menu Riwayat diklik
+            if (targetId === 'history') {
+                loadHistory();
+            }
         }
         
         document.querySelectorAll('.sidebar .menu-item').forEach(item => {
@@ -1265,9 +1371,11 @@
                     placeholderText = 'Cari preset...';
                     loadPresets();
                 } else if (targetId === 'tiktok-downloader') {
+                    placeholderText = 'Cari link TikTok...';
+                } else if (targetId === 'media-to-url') { // UBAH: Id menu
                     placeholderText = 'Cari...';
-                } else if (targetId === 'video-to-url') {
-                    placeholderText = 'Cari...';
+                } else if (targetId === 'history') { // TAMBAH: Id menu
+                    placeholderText = 'Cari di riwayat...';
                 }
                 showContent(targetId, placeholderText);
                 
@@ -1635,7 +1743,6 @@
             presetContainer.innerHTML = '<p style="text-align: center; color: var(--neon-cyan);">Memuat preset...</p>';
 
             // URL SERVER BACKEND ANDA
-            // Pastikan URL ini sesuai dengan server yang Anda jalankan
             const API_URL = `${CUSTOM_API_URL}/api/presets`; 
 
             try {
@@ -1729,7 +1836,11 @@
                         
                         tiktokResultArea.style.display = 'flex';
                         
-                        tiktokVideoPlayer.src = tiktokData.play;
+                        const apiBaseUrl = 'https://www.tikwm.com';
+                        const videoUrl = tiktokData.play.startsWith('http') ? tiktokData.play : `${apiBaseUrl}${tiktokData.play}`;
+                        const musicUrl = tiktokData.music.startsWith('http') ? tiktokData.music : `${apiBaseUrl}${tiktokData.music}`;
+
+                        tiktokVideoPlayer.src = videoUrl;
                         tiktokVideoTitle.innerText = tiktokData.title || 'Tidak ada judul';
                         tiktokVideoAuthor.innerText = tiktokData.author?.nickname || 'Tidak diketahui';
     
@@ -1737,12 +1848,20 @@
                         tiktokVideoLikes.innerText = (tiktokData.digg_count || 0).toLocaleString('id-ID');
                         tiktokVideoComments.innerText = (tiktokData.comment_count || 0).toLocaleString('id-ID');
     
-                        btnVideoNowm.href = tiktokData.play;
+                        btnVideoNowm.href = videoUrl;
                         btnVideoNowm.style.display = tiktokData.play ? 'block' : 'none';
-                        btnMusic.href = tiktokData.music;
+                        btnMusic.href = musicUrl;
                         btnMusic.style.display = tiktokData.music ? 'block' : 'none';
     
                         tiktokStatusMessage.style.display = 'none';
+                        
+                        // TAMBAH: Simpan hasil ke riwayat
+                        saveToHistory({
+                            type: 'tiktok',
+                            title: tiktokData.title || 'Video TikTok',
+                            url: videoUrl,
+                            author: tiktokData.author?.nickname || 'Tidak diketahui'
+                        });
     
                     } else {
                         tiktokStatusMessage.style.backgroundColor = 'rgba(244, 67, 54, 0.2)';
@@ -1760,8 +1879,8 @@
             });
         }
         
-        // --- LOGIKA VIDEO TO URL ---
-        const videoFile = document.getElementById('videoFile');
+        // --- LOGIKA MEDIA TO URL (video/foto) ---
+        const mediaFile = document.getElementById('mediaFile'); // UBAH: Id elemen
         const fileNameSpan = document.getElementById('fileName');
         const uploadForm = document.getElementById('uploadForm');
         const uploadBtn = document.getElementById('uploadBtn');
@@ -1770,14 +1889,14 @@
         const progressBarContainer = document.querySelector('.progress-bar-container');
         const progressBar = document.querySelector('.progress-bar');
         
-        if (videoFile) {
-            videoFile.addEventListener('change', () => {
-                const file = videoFile.files[0];
+        if (mediaFile) { // UBAH: Id elemen
+            mediaFile.addEventListener('change', () => {
+                const file = mediaFile.files[0];
                 if (file) {
                     fileNameSpan.innerText = file.name;
                     uploadBtn.disabled = false;
                 } else {
-                    fileNameSpan.innerText = 'Pilih Video';
+                    fileNameSpan.innerText = 'Pilih File Media';
                     uploadBtn.disabled = true;
                 }
             });
@@ -1787,9 +1906,9 @@
             uploadForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 
-                const file = videoFile.files[0];
+                const file = mediaFile.files[0]; // UBAH: Id elemen
                 if (!file) {
-                    alert('Mohon pilih file video terlebih dahulu.');
+                    alert('Mohon pilih file media terlebih dahulu.');
                     return;
                 }
                 
@@ -1812,11 +1931,11 @@
                 progressBar.style.width = '0%';
                 
                 const formData = new FormData();
-                formData.append('video', file);
+                formData.append('media', file); // UBAH: nama field
                 
                 try {
                     const xhr = new XMLHttpRequest();
-                    xhr.open('POST', `${CUSTOM_API_URL}/api/upload-video`, true);
+                    xhr.open('POST', `${CUSTOM_API_URL}/api/upload-media`, true); // UBAH: endpoint
                     
                     xhr.upload.addEventListener('progress', (e) => {
                         if (e.lengthComputable) {
@@ -1828,19 +1947,26 @@
                     
                     xhr.onload = () => {
                         if (xhr.status === 200) {
-                            const videoUrl = xhr.responseText.trim();
+                            const mediaUrl = xhr.responseText.trim();
                             uploadStatusMessage.style.backgroundColor = 'rgba(76, 175, 80, 0.2)';
                             uploadStatusMessage.style.color = '#4caf50';
                             uploadStatusMessage.innerText = '✅ Berhasil diunggah!';
                             uploadResultDiv.innerHTML = `
                                 <div class="result-box">
-                                    <h3>URL Video Berhasil Dibuat</h3>
-                                    <p>URL: <a href="${videoUrl}" target="_blank">${videoUrl}</a></p>
-                                    <button onclick="copyToClipboard('${videoUrl}')" class="upload-btn">Salin URL</button>
+                                    <h3>URL Berhasil Dibuat</h3>
+                                    <p>URL: <a href="${mediaUrl}" target="_blank">${mediaUrl}</a></p>
+                                    <button onclick="copyToClipboard('${mediaUrl}')" class="upload-btn">Salin URL</button>
                                 </div>
                             `;
+                            // TAMBAH: Simpan hasil ke riwayat
+                            saveToHistory({
+                                type: 'media',
+                                title: file.name,
+                                url: mediaUrl
+                            });
+
                         } else {
-                            throw new Error(xhr.responseText || 'Gagal mengunggah video.');
+                            throw new Error(xhr.responseText || 'Gagal mengunggah media.');
                         }
                     };
                     
@@ -1858,7 +1984,7 @@
                     progressBarContainer.style.display = 'none';
                 } finally {
                     uploadBtn.disabled = false;
-                    uploadBtn.innerText = 'Upload Video';
+                    uploadBtn.innerText = 'Upload';
                 }
             });
         }
@@ -1871,6 +1997,59 @@
             });
         }
         
+        // --- TAMBAH: LOGIKA RIWAYAT ---
+        const HISTORY_KEY = 'rofik_history';
+        const historyList = document.getElementById('historyList');
+        const emptyHistoryMessage = document.getElementById('emptyHistoryMessage');
+        const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+        
+        function saveToHistory(item) {
+            let history = JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
+            item.id = Date.now();
+            item.date = new Date().toLocaleString('id-ID');
+            history.unshift(item); // Tambahkan ke paling depan
+            localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+            loadHistory();
+        }
+        
+        function loadHistory() {
+            const history = JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
+            historyList.innerHTML = ''; // Kosongkan list
+            
+            if (history.length === 0) {
+                emptyHistoryMessage.style.display = 'block';
+                clearHistoryBtn.style.display = 'none';
+            } else {
+                emptyHistoryMessage.style.display = 'none';
+                clearHistoryBtn.style.display = 'block';
+                
+                history.forEach(item => {
+                    const listItem = document.createElement('li');
+                    listItem.className = `history-item ${item.type}`;
+                    listItem.innerHTML = `
+                        <div class="item-header">
+                            <span class="type">${item.type === 'tiktok' ? 'TikTok' : 'Media'}</span>
+                            <span class="date">${item.date}</span>
+                        </div>
+                        <div class="item-title">${item.title}</div>
+                        <div class="item-url">
+                            <a href="${item.url}" target="_blank">${item.url}</a>
+                        </div>
+                    `;
+                    historyList.appendChild(listItem);
+                });
+            }
+        }
+        
+        if (clearHistoryBtn) {
+            clearHistoryBtn.addEventListener('click', () => {
+                if (confirm('Apakah kamu yakin ingin menghapus semua riwayat?')) {
+                    localStorage.removeItem(HISTORY_KEY);
+                    loadHistory();
+                }
+            });
+        }
+
         setupCustomDropdowns();
     </script>
 </body>
