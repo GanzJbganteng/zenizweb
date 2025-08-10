@@ -838,6 +838,114 @@
         .tiktok-downloader #resultArea .download-links .btn-music:hover {
             background-color: #c2185b;
         }
+
+        /* --- Styling Video to URL --- */
+        .video-uploader {
+            max-width: 600px;
+            margin: 2rem auto;
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: 15px;
+            border: 2px solid var(--neon-cyan);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+            text-align: center;
+        }
+
+        .video-uploader h1 {
+            color: var(--neon-cyan);
+            text-shadow: 0 0 10px var(--neon-shadow);
+            margin-bottom: 1rem;
+        }
+
+        .video-uploader .upload-area {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .video-uploader input[type="file"] {
+            display: none;
+        }
+
+        .video-uploader .custom-file-upload {
+            border: 2px dashed var(--neon-cyan);
+            padding: 2rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .video-uploader .custom-file-upload:hover {
+            background-color: var(--light-card-bg);
+        }
+        
+        .video-uploader .custom-file-upload span {
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .video-uploader .upload-btn {
+            padding: 0.75rem;
+            background-color: var(--neon-cyan);
+            color: var(--btn-text);
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .video-uploader .upload-btn:hover {
+            background-color: #00b8d4;
+            box-shadow: 0 0 15px var(--neon-shadow);
+        }
+        
+        .video-uploader .progress-bar-container {
+            width: 100%;
+            height: 10px;
+            background-color: var(--light-card-bg);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .video-uploader .progress-bar {
+            height: 100%;
+            width: 0;
+            background-color: var(--neon-cyan);
+            transition: width 0.3s ease;
+        }
+        
+        .video-uploader #uploadResult {
+            margin-top: 2rem;
+            text-align: left;
+            word-wrap: break-word;
+        }
+        
+        .video-uploader #uploadResult .result-box {
+            background-color: var(--light-card-bg);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 1px solid var(--neon-cyan);
+        }
+
+        .video-uploader #uploadResult .result-box a {
+            color: var(--neon-cyan);
+            word-break: break-all;
+        }
+        
+        .video-uploader .status-message {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            background-color: rgba(0, 255, 242, 0.2);
+            color: var(--neon-cyan);
+            text-align: center;
+            display: none;
+        }
+
     </style>
 </head>
 <body>
@@ -859,6 +967,7 @@
         <a href="#suntik-sosmed" class="menu-item"><span class="icon fas fa-share-alt"></span>Suntik Sosmed</a>
         <a href="#alight-motion-preset" class="menu-item"><span class="icon fas fa-film"></span>Preset Alight Motion</a>
         <a href="#tiktok-downloader" class="menu-item"><span class="icon fab fa-tiktok"></span>TikTok Downloader</a>
+        <a href="#video-to-url" class="menu-item"><span class="icon fas fa-link"></span>Video to URL</a>
     </div>
     
     <div id="backdrop" class="backdrop"></div>
@@ -1059,6 +1168,27 @@
             </div>
         </div>
         
+        <div id="video-to-url" class="content-section">
+            <div class="video-uploader">
+                <h1>Video to URL</h1>
+                <p>Upload video kamu dan dapatkan URL permanen.</p>
+                <form id="uploadForm" class="upload-area">
+                    <label for="videoFile" class="custom-file-upload">
+                        <span id="fileName">Pilih Video</span>
+                        <br><br>
+                        <small>Ukuran maksimal 200MB</small>
+                    </label>
+                    <input type="file" id="videoFile" name="video" accept="video/*">
+                    <button type="submit" id="uploadBtn" class="upload-btn">Upload Video</button>
+                </form>
+                <div class="progress-bar-container">
+                    <div class="progress-bar"></div>
+                </div>
+                <div id="uploadStatusMessage" class="status-message"></div>
+                <div id="uploadResult"></div>
+            </div>
+        </div>
+        
     </main>
     
     <script>
@@ -1069,7 +1199,7 @@
 
         // GANTI DENGAN IP LOKAL TERMUX-MU JIKA INGIN DIAKSES DARI JARINGAN LAIN
         // DAN PASTIKAN PORT-NYA SAMA DENGAN SERVER PYTHON.
-        const CUSTOM_API_URL = 'http://localhost:8085';
+        const CUSTOM_API_URL = 'http://localhost:9091';
 
         let allServices = [];
         let categories = [];
@@ -1135,6 +1265,8 @@
                     placeholderText = 'Cari preset...';
                     loadPresets();
                 } else if (targetId === 'tiktok-downloader') {
+                    placeholderText = 'Cari...';
+                } else if (targetId === 'video-to-url') {
                     placeholderText = 'Cari...';
                 }
                 showContent(targetId, placeholderText);
@@ -1502,14 +1634,23 @@
             if (!presetContainer) return;
             presetContainer.innerHTML = '<p style="text-align: center; color: var(--neon-cyan);">Memuat preset...</p>';
 
+            // URL SERVER BACKEND ANDA
+            // Pastikan URL ini sesuai dengan server yang Anda jalankan
+            const API_URL = `${CUSTOM_API_URL}/api/presets`; 
+
             try {
-                const response = await fetch('presets.json');
+                const response = await fetch(API_URL);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 const presets = await response.json();
 
                 presetContainer.innerHTML = '';
+
+                if (presets.length === 0) {
+                    presetContainer.innerHTML = '<p style="text-align: center; color: var(--light-text);">Tidak ada preset yang tersedia.</p>';
+                    return;
+                }
 
                 presets.forEach(preset => {
                     const presetCard = document.createElement('div');
@@ -1542,7 +1683,7 @@
 
             } catch (error) {
                 console.error('Gagal memuat preset:', error);
-                presetContainer.innerHTML = '<p style="text-align: center; color: #f44336;">Gagal memuat daftar preset. Pastikan file `presets.json` ada.</p>';
+                presetContainer.innerHTML = `<p style="text-align: center; color: #f44336;">Gagal memuat daftar preset. Pastikan server backend berjalan di \`${CUSTOM_API_URL}\`.</p>`;
             }
         }
         
@@ -1580,7 +1721,7 @@
                 tiktokVideoPlayer.removeAttribute('src');
     
                 try {
-                    const response = await fetch(`${CUSTOM_API_URL}/download-tiktok?url=${encodeURIComponent(url)}`);
+                    const response = await fetch(`${CUSTOM_API_URL}/api/download-tiktok?url=${encodeURIComponent(url)}`);
                     const data = await response.json();
                     
                     if (response.ok && data.status === 'success' && data.data) {
@@ -1616,6 +1757,117 @@
                 } finally {
                     downloadTiktokBtn.disabled = false;
                 }
+            });
+        }
+        
+        // --- LOGIKA VIDEO TO URL ---
+        const videoFile = document.getElementById('videoFile');
+        const fileNameSpan = document.getElementById('fileName');
+        const uploadForm = document.getElementById('uploadForm');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const uploadStatusMessage = document.getElementById('uploadStatusMessage');
+        const uploadResultDiv = document.getElementById('uploadResult');
+        const progressBarContainer = document.querySelector('.progress-bar-container');
+        const progressBar = document.querySelector('.progress-bar');
+        
+        if (videoFile) {
+            videoFile.addEventListener('change', () => {
+                const file = videoFile.files[0];
+                if (file) {
+                    fileNameSpan.innerText = file.name;
+                    uploadBtn.disabled = false;
+                } else {
+                    fileNameSpan.innerText = 'Pilih Video';
+                    uploadBtn.disabled = true;
+                }
+            });
+        }
+        
+        if (uploadForm) {
+            uploadForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const file = videoFile.files[0];
+                if (!file) {
+                    alert('Mohon pilih file video terlebih dahulu.');
+                    return;
+                }
+                
+                // Batasan ukuran file (200MB)
+                const MAX_FILE_SIZE = 200 * 1024 * 1024;
+                if (file.size > MAX_FILE_SIZE) {
+                    alert('Ukuran file maksimal adalah 200MB.');
+                    return;
+                }
+                
+                uploadBtn.disabled = true;
+                uploadBtn.innerText = 'Mengunggah...';
+                
+                uploadStatusMessage.style.display = 'block';
+                uploadStatusMessage.style.backgroundColor = 'rgba(0, 255, 242, 0.2)';
+                uploadStatusMessage.style.color = 'var(--neon-cyan)';
+                uploadStatusMessage.innerText = 'Mempersiapkan pengunggahan...';
+                
+                progressBarContainer.style.display = 'block';
+                progressBar.style.width = '0%';
+                
+                const formData = new FormData();
+                formData.append('video', file);
+                
+                try {
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('POST', `${CUSTOM_API_URL}/api/upload-video`, true);
+                    
+                    xhr.upload.addEventListener('progress', (e) => {
+                        if (e.lengthComputable) {
+                            const percentComplete = (e.loaded / e.total) * 100;
+                            progressBar.style.width = percentComplete + '%';
+                            uploadStatusMessage.innerText = `Mengunggah... ${Math.round(percentComplete)}%`;
+                        }
+                    });
+                    
+                    xhr.onload = () => {
+                        if (xhr.status === 200) {
+                            const videoUrl = xhr.responseText.trim();
+                            uploadStatusMessage.style.backgroundColor = 'rgba(76, 175, 80, 0.2)';
+                            uploadStatusMessage.style.color = '#4caf50';
+                            uploadStatusMessage.innerText = '✅ Berhasil diunggah!';
+                            uploadResultDiv.innerHTML = `
+                                <div class="result-box">
+                                    <h3>URL Video Berhasil Dibuat</h3>
+                                    <p>URL: <a href="${videoUrl}" target="_blank">${videoUrl}</a></p>
+                                    <button onclick="copyToClipboard('${videoUrl}')" class="upload-btn">Salin URL</button>
+                                </div>
+                            `;
+                        } else {
+                            throw new Error(xhr.responseText || 'Gagal mengunggah video.');
+                        }
+                    };
+                    
+                    xhr.onerror = () => {
+                        throw new Error('Terjadi kesalahan jaringan.');
+                    };
+                    
+                    xhr.send(formData);
+                    
+                } catch (error) {
+                    console.error('Upload Error:', error);
+                    uploadStatusMessage.style.backgroundColor = 'rgba(244, 67, 54, 0.2)';
+                    uploadStatusMessage.style.color = '#f44336';
+                    uploadStatusMessage.innerText = `❌ Gagal: ${error.message}`;
+                    progressBarContainer.style.display = 'none';
+                } finally {
+                    uploadBtn.disabled = false;
+                    uploadBtn.innerText = 'Upload Video';
+                }
+            });
+        }
+        
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('URL berhasil disalin!');
+            }).catch(err => {
+                console.error('Gagal menyalin URL: ', err);
             });
         }
         
