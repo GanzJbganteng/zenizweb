@@ -861,7 +861,7 @@
         <a href="#suntik-sosmed" class="menu-item"><span class="icon fas fa-share-alt"></span>Suntik Sosmed</a>
         <a href="#alight-motion-preset" class="menu-item"><span class="icon fas fa-film"></span>Preset Alight Motion</a>
         <a href="#tiktok-downloader" class="menu-item"><span class="icon fab fa-tiktok"></span>TikTok Downloader</a>
-        </div>
+    </div>
     
     <div id="backdrop" class="backdrop"></div>
 
@@ -1065,7 +1065,7 @@
         const FAYU_API_ID = '99459';
         const FAYU_API_KEY = 'uihkpf-3tbqro-dp705k-bfiotq-eovqcy';
         const FAYU_ENDPOINT = 'https://fayupedia.id/api';
-        
+
         // URL API TikTok Downloader dari script WhatsApp kamu
         const TIKWM_API_URL = 'https://www.tikwm.com/api/';
 
@@ -1529,7 +1529,7 @@
             }
         }
         
-        // --- LOGIKA TIKTOK DOWNLOADER BARU ---
+        // --- LOGIKA TIKTOK DOWNLOADER BARU (SUDAH DIPERBAIKI) ---
         const downloadTiktokBtn = document.getElementById('downloadTiktokBtn');
         const tiktokUrlInput = document.getElementById('tiktokUrlInput');
         const resultArea = document.getElementById('resultArea');
@@ -1539,7 +1539,7 @@
         const btnVideoNowm = document.getElementById('btnVideoNowm');
         const btnMusic = document.getElementById('btnMusic');
         const tiktokStatusMessage = document.getElementById('tiktokStatusMessage');
-        
+
         downloadTiktokBtn.addEventListener('click', async () => {
             const url = tiktokUrlInput.value.trim();
             if (!url) {
@@ -1547,13 +1547,14 @@
                 return;
             }
 
-            // Tampilkan pesan loading
             tiktokStatusMessage.style.display = 'block';
             tiktokStatusMessage.style.backgroundColor = 'rgba(0, 255, 242, 0.2)';
             tiktokStatusMessage.style.color = 'var(--neon-cyan)';
             tiktokStatusMessage.innerText = 'Sedang memproses, mohon tunggu...';
             downloadTiktokBtn.disabled = true;
             resultArea.style.display = 'none';
+            videoPlayer.pause();
+            videoPlayer.removeAttribute('src');
 
             try {
                 const response = await fetch(TIKWM_API_URL, {
@@ -1567,21 +1568,27 @@
                 });
                 const data = await response.json();
                 
-                if (data.status === 'success' && data.data) {
+                // Memeriksa respons dengan lebih teliti, seperti yang dilakukan bot Telegram Anda
+                if (data.status === 'success' && data.data && data.data.play) {
                     const videoData = data.data;
+
+                    // Menggabungkan URL dasar dan path dari API
+                    const videoUrlNowm = `https://www.tikwm.com${videoData.play}`;
+                    const videoUrlHd = videoData.hdplay ? `https://www.tikwm.com${videoData.hdplay}` : videoUrlNowm;
+                    const musicUrl = videoData.music || '#';
 
                     // Tampilkan area hasil
                     resultArea.style.display = 'flex';
                     
                     // Update player dan info
-                    videoPlayer.src = videoData.hdplay || videoData.play;
+                    videoPlayer.src = videoUrlHd;
                     videoTitle.innerText = videoData.title || 'Tidak ada judul';
                     videoAuthor.innerText = videoData.author.nickname || 'Tidak diketahui';
 
                     // Update link download
-                    btnVideoNowm.href = videoData.hdplay || videoData.play;
+                    btnVideoNowm.href = videoUrlHd;
                     btnVideoNowm.style.display = 'block';
-                    btnMusic.href = videoData.music || '#';
+                    btnMusic.href = musicUrl;
                     btnMusic.style.display = 'block';
 
                     tiktokStatusMessage.style.display = 'none';
@@ -1589,7 +1596,7 @@
                 } else {
                     tiktokStatusMessage.style.backgroundColor = 'rgba(244, 67, 54, 0.2)';
                     tiktokStatusMessage.style.color = '#f44336';
-                    tiktokStatusMessage.innerText = `❌ Gagal: ${data.msg || 'Terjadi kesalahan saat memproses link.'}`;
+                    tiktokStatusMessage.innerText = `❌ Gagal: ${data.msg || 'Terjadi kesalahan saat memproses link. Pastikan URL valid atau video tidak private.'}`;
                 }
             } catch (error) {
                 console.error('Download Error:', error);
@@ -1605,4 +1612,3 @@
     </script>
 </body>
 </html>
-
