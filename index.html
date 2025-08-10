@@ -311,7 +311,6 @@
             display: flex;
             justify-content: center;
             gap: 2rem;
-            margin-bottom: 2rem;
             flex-wrap: wrap;
         }
 
@@ -839,7 +838,6 @@
         .tiktok-downloader #resultArea .download-links .btn-music:hover {
             background-color: #c2185b;
         }
-        
     </style>
 </head>
 <body>
@@ -1044,8 +1042,11 @@
                     
                     <div class="video-info">
                         <h3>Informasi Video</h3>
-                        <p><strong>Judul:</strong> <span id="videoTitle">Memuat...</span></p>
-                        <p><strong>Author:</strong> <span id="videoAuthor">Memuat...</span></p>
+                        <p><strong>Judul:</strong> <span id="videoTitle"></span></p>
+                        <p><strong>Author:</strong> <span id="videoAuthor"></span></p>
+                        <p><strong>Jumlah Likes:</strong> <span id="videoLikes"></span></p>
+                        <p><strong>Jumlah Views:</strong> <span id="videoViews"></span></p>
+                        <p><strong>Jumlah Komentar:</strong> <span id="videoComments"></span></p>
                     </div>
 
                     <div class="download-links">
@@ -1066,8 +1067,9 @@
         const FAYU_API_KEY = 'uihkpf-3tbqro-dp705k-bfiotq-eovqcy';
         const FAYU_ENDPOINT = 'https://fayupedia.id/api';
 
-        // URL API TikTok Downloader dari script WhatsApp kamu
-        const TIKWM_API_URL = 'https://www.tikwm.com/api/';
+        // GANTI DENGAN IP LOKAL TERMUX-MU JIKA INGIN DIAKSES DARI JARINGAN LAIN
+        // DAN PASTIKAN PORT-NYA SAMA DENGAN SERVER PYTHON.
+        const CUSTOM_API_URL = 'http://localhost:8085';
 
         let allServices = [];
         let categories = [];
@@ -1208,53 +1210,57 @@
             const serviceDropdown = document.getElementById('serviceDropdown');
 
             // Category Dropdown Logic
-            categoryDropdown.querySelector('.dropdown-selected').addEventListener('click', () => {
-                categoryDropdown.querySelector('.dropdown-list').classList.toggle('open');
-                serviceDropdown.querySelector('.dropdown-list').classList.remove('open');
-                categoryDropdown.querySelector('input').focus();
-            });
+            if (categoryDropdown) {
+                categoryDropdown.querySelector('.dropdown-selected').addEventListener('click', () => {
+                    categoryDropdown.querySelector('.dropdown-list').classList.toggle('open');
+                    if (serviceDropdown) serviceDropdown.querySelector('.dropdown-list').classList.remove('open');
+                    categoryDropdown.querySelector('input').focus();
+                });
+    
+                categoryDropdown.querySelector('input').addEventListener('input', (e) => {
+                    filterDropdownList(e.target.value, 'category');
+                });
+                
+                document.getElementById('categoryList').addEventListener('click', (e) => {
+                    if (e.target.tagName === 'LI') {
+                        const selectedCategory = e.target.innerText;
+                        categoryDropdown.querySelector('.dropdown-selected').innerText = selectedCategory;
+                        categoryDropdown.querySelector('.dropdown-list').classList.remove('open');
+                        document.getElementById('hiddenCategory').value = selectedCategory;
+                        
+                        populateServiceDropdown(selectedCategory);
+                    }
+                });
+            }
 
-            categoryDropdown.querySelector('input').addEventListener('input', (e) => {
-                filterDropdownList(e.target.value, 'category');
-            });
-            
-            document.getElementById('categoryList').addEventListener('click', (e) => {
-                if (e.target.tagName === 'LI') {
-                    const selectedCategory = e.target.innerText;
-                    categoryDropdown.querySelector('.dropdown-selected').innerText = selectedCategory;
-                    categoryDropdown.querySelector('.dropdown-list').classList.remove('open');
-                    document.getElementById('hiddenCategory').value = selectedCategory;
-                    
-                    // Update services based on selected category
-                    populateServiceDropdown(selectedCategory);
-                }
-            });
-            
             // Service Dropdown Logic
-            serviceDropdown.querySelector('.dropdown-selected').addEventListener('click', () => {
-                serviceDropdown.querySelector('.dropdown-list').classList.toggle('open');
-                categoryDropdown.querySelector('.dropdown-list').classList.remove('open');
-                serviceDropdown.querySelector('input').focus();
-            });
-
-            serviceDropdown.querySelector('input').addEventListener('input', (e) => {
-                filterDropdownList(e.target.value, 'service', document.getElementById('hiddenCategory').value);
-            });
-            
-            document.getElementById('serviceList').addEventListener('click', (e) => {
-                if (e.target.tagName === 'LI') {
-                    const selectedServiceId = e.target.dataset.value;
-                    const selectedServiceName = e.target.innerText.split('(')[0].trim();
-                    serviceDropdown.querySelector('.dropdown-selected').innerText = selectedServiceName;
-                    serviceDropdown.querySelector('.dropdown-list').classList.remove('open');
-                    document.getElementById('hiddenService').value = selectedServiceId;
-                    updateServiceDetails(selectedServiceId);
-                }
-            });
+            if (serviceDropdown) {
+                serviceDropdown.querySelector('.dropdown-selected').addEventListener('click', () => {
+                    serviceDropdown.querySelector('.dropdown-list').classList.toggle('open');
+                    if (categoryDropdown) categoryDropdown.querySelector('.dropdown-list').classList.remove('open');
+                    serviceDropdown.querySelector('input').focus();
+                });
+    
+                serviceDropdown.querySelector('input').addEventListener('input', (e) => {
+                    filterDropdownList(e.target.value, 'service', document.getElementById('hiddenCategory').value);
+                });
+                
+                document.getElementById('serviceList').addEventListener('click', (e) => {
+                    if (e.target.tagName === 'LI') {
+                        const selectedServiceId = e.target.dataset.value;
+                        const selectedServiceName = e.target.innerText.split('(')[0].trim();
+                        serviceDropdown.querySelector('.dropdown-selected').innerText = selectedServiceName;
+                        serviceDropdown.querySelector('.dropdown-list').classList.remove('open');
+                        document.getElementById('hiddenService').value = selectedServiceId;
+                        updateServiceDetails(selectedServiceId);
+                    }
+                });
+            }
         }
         
         function populateCategoryDropdown() {
             const categoryList = document.getElementById('categoryList');
+            if (!categoryList) return;
             categoryList.innerHTML = '';
             
             categories.forEach(category => {
@@ -1266,6 +1272,8 @@
         
         function populateServiceDropdown(selectedCategory = '') {
             const serviceList = document.getElementById('serviceList');
+            if (!serviceList) return;
+            
             const filteredServices = allServices.filter(service => {
                 return selectedCategory === '' || service.category === selectedCategory;
             });
@@ -1306,6 +1314,7 @@
                     return selectedCategory === '' || service.category === selectedCategory;
                 });
             }
+            if (!listElement) return;
             
             listElement.innerHTML = '';
 
@@ -1354,38 +1363,42 @@
             minMaxInfoDiv.style.display = 'none';
             serviceDetailsDiv.style.display = 'none';
             commentSection.style.display = 'none';
-            commentsTextarea.value = '';
-            quantityInput.removeAttribute('min');
-            quantityInput.removeAttribute('max');
-            quantityInput.value = '';
+            if (commentsTextarea) commentsTextarea.value = '';
+            if (quantityInput) {
+                quantityInput.removeAttribute('min');
+                quantityInput.removeAttribute('max');
+                quantityInput.value = '';
+            }
 
             if (selectedService) {
-                // Tampilkan info min/max
                 minMaxInfoDiv.style.display = 'flex';
                 serviceMinSpan.innerText = selectedService.min.toLocaleString('id-ID');
                 serviceMaxSpan.innerText = selectedService.max.toLocaleString('id-ID');
                 
-                // Tampilkan detail layanan
                 serviceDetailsDiv.style.display = 'block';
                 servicePriceSpan.innerText = `Rp ${selectedService.price.toLocaleString('id-ID')}/1K`;
                 serviceDescriptionP.innerHTML = selectedService.description || '<i style="color:var(--light-text);">Tidak ada deskripsi.</i>';
 
-                // Cek apakah layanan membutuhkan komentar
                 if (selectedService.name.toLowerCase().includes('komentar') || selectedService.name.toLowerCase().includes('comment')) {
                     commentSection.style.display = 'block';
-                    quantityInput.placeholder = 'Jumlah komentar...';
+                    if (quantityInput) quantityInput.placeholder = 'Jumlah komentar...';
                 } else {
-                    quantityInput.placeholder = 'Masukkan jumlah...';
+                    if (quantityInput) quantityInput.placeholder = 'Masukkan jumlah...';
                 }
-
-                quantityInput.setAttribute('min', selectedService.min);
-                quantityInput.setAttribute('max', selectedService.max);
-                quantityInput.value = selectedService.min; // Set default value to min
+                
+                if (quantityInput) {
+                    quantityInput.setAttribute('min', selectedService.min);
+                    quantityInput.setAttribute('max', selectedService.max);
+                    quantityInput.value = selectedService.min; // Set default value to min
+                }
             }
             calculateCost();
         }
 
-        document.getElementById('quantity').addEventListener('input', calculateCost);
+        const quantityInput = document.getElementById('quantity');
+        if (quantityInput) {
+            quantityInput.addEventListener('input', calculateCost);
+        }
 
         function calculateCost() {
             const serviceId = document.getElementById('hiddenService').value;
@@ -1394,8 +1407,8 @@
 
             const selectedService = allServices.find(service => service.id == serviceId);
             
-            if (!selectedService || !quantityInput.value) {
-                costDiv.innerText = 'Rp 0';
+            if (!selectedService || !quantityInput || !quantityInput.value) {
+                if (costDiv) costDiv.innerText = 'Rp 0';
                 return;
             }
 
@@ -1403,86 +1416,90 @@
             const quantity = parseInt(quantityInput.value, 10);
             
             if (isNaN(pricePerK) || isNaN(quantity) || quantity <= 0) {
-                costDiv.innerText = 'Rp 0';
+                if (costDiv) costDiv.innerText = 'Rp 0';
                 return;
             }
             
             const totalCost = (pricePerK / 1000) * quantity;
-            costDiv.innerText = `Rp ${totalCost.toLocaleString('id-ID')}`;
+            if (costDiv) costDiv.innerText = `Rp ${totalCost.toLocaleString('id-ID')}`;
         }
 
-        document.getElementById('suntikSosmedForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-            const serviceId = document.getElementById('hiddenService').value;
-            const targetLink = document.getElementById('target').value;
-            const quantity = document.getElementById('quantity').value;
-            const comments = document.getElementById('comments').value;
-            const statusMessage = document.getElementById('statusMessage');
-            const submitBtn = document.getElementById('submitOrderBtn');
-            
-            const selectedService = allServices.find(service => service.id == serviceId);
-            const isCommentService = selectedService.name.toLowerCase().includes('komentar') || selectedService.name.toLowerCase().includes('comment');
-
-            if (!serviceId || !targetLink || !quantity || (isCommentService && !comments)) {
-                alert('Mohon isi semua data dengan lengkap.');
-                return;
-            }
-
-            submitBtn.disabled = true;
-            submitBtn.innerText = 'Memproses...';
-            statusMessage.style.display = 'block';
-            statusMessage.style.backgroundColor = 'rgba(0, 255, 242, 0.2)';
-            statusMessage.style.color = 'var(--neon-cyan)';
-            statusMessage.innerText = 'Sedang mengirim pesanan...';
-
-            const formData = {
-                'api_id': FAYU_API_ID,
-                'api_key': FAYU_API_KEY,
-                'service': serviceId,
-                'target': targetLink,
-                'quantity': quantity
-            };
-            
-            if (isCommentService) {
-                formData.note = comments;
-            }
-
-            try {
-                const response = await fetch(`${FAYU_ENDPOINT}/order`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: new URLSearchParams(formData)
-                });
-
-                const data = await response.json();
+        const suntikSosmedForm = document.getElementById('suntikSosmedForm');
+        if (suntikSosmedForm) {
+            suntikSosmedForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+    
+                const serviceId = document.getElementById('hiddenService').value;
+                const targetLink = document.getElementById('target').value;
+                const quantity = document.getElementById('quantity').value;
+                const comments = document.getElementById('comments').value;
+                const statusMessage = document.getElementById('statusMessage');
+                const submitBtn = document.getElementById('submitOrderBtn');
                 
-                if (data.status) {
-                    statusMessage.style.backgroundColor = 'rgba(76, 175, 80, 0.2)';
-                    statusMessage.style.color = '#4caf50';
-                    statusMessage.innerHTML = `✅ Pesanan berhasil dibuat! ID pesanan: <b>#${data.order}</b>`;
-                } else {
+                const selectedService = allServices.find(service => service.id == serviceId);
+                const isCommentService = selectedService.name.toLowerCase().includes('komentar') || selectedService.name.toLowerCase().includes('comment');
+    
+                if (!serviceId || !targetLink || !quantity || (isCommentService && !comments)) {
+                    alert('Mohon isi semua data dengan lengkap.');
+                    return;
+                }
+    
+                submitBtn.disabled = true;
+                submitBtn.innerText = 'Memproses...';
+                statusMessage.style.display = 'block';
+                statusMessage.style.backgroundColor = 'rgba(0, 255, 242, 0.2)';
+                statusMessage.style.color = 'var(--neon-cyan)';
+                statusMessage.innerText = 'Sedang mengirim pesanan...';
+    
+                const formData = {
+                    'api_id': FAYU_API_ID,
+                    'api_key': FAYU_API_KEY,
+                    'service': serviceId,
+                    'target': targetLink,
+                    'quantity': quantity
+                };
+                
+                if (isCommentService) {
+                    formData.note = comments;
+                }
+    
+                try {
+                    const response = await fetch(`${FAYU_ENDPOINT}/order`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: new URLSearchParams(formData)
+                    });
+    
+                    const data = await response.json();
+                    
+                    if (data.status) {
+                        statusMessage.style.backgroundColor = 'rgba(76, 175, 80, 0.2)';
+                        statusMessage.style.color = '#4caf50';
+                        statusMessage.innerHTML = `✅ Pesanan berhasil dibuat! ID pesanan: <b>#${data.order}</b>`;
+                    } else {
+                        statusMessage.style.backgroundColor = 'rgba(244, 67, 54, 0.2)';
+                        statusMessage.style.color = '#f44336';
+                        statusMessage.innerText = `❌ Gagal: ${data.msg || 'Terjadi kesalahan tidak diketahui.'}`;
+                    }
+                } catch (error) {
                     statusMessage.style.backgroundColor = 'rgba(244, 67, 54, 0.2)';
                     statusMessage.style.color = '#f44336';
-                    statusMessage.innerText = `❌ Gagal: ${data.msg || 'Terjadi kesalahan tidak diketahui.'}`;
+                    statusMessage.innerText = '❌ Terjadi kesalahan saat menghubungi API.';
+                    console.error('API Error:', error);
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = 'Pesan';
+                    fetchServicesAndBalance(); // Refresh balance
                 }
-            } catch (error) {
-                statusMessage.style.backgroundColor = 'rgba(244, 67, 54, 0.2)';
-                statusMessage.style.color = '#f44336';
-                statusMessage.innerText = '❌ Terjadi kesalahan saat menghubungi API.';
-                console.error('API Error:', error);
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerText = 'Pesan';
-                fetchServicesAndBalance(); // Refresh balance
-            }
-        });
+            });
+        }
         
         // --- Preset Alight Motion Functions ---
         async function loadPresets() {
             const presetContainer = document.querySelector('.preset-container');
+            if (!presetContainer) return;
             presetContainer.innerHTML = '<p style="text-align: center; color: var(--neon-cyan);">Memuat preset...</p>';
 
             try {
@@ -1529,85 +1546,79 @@
             }
         }
         
-        // --- LOGIKA TIKTOK DOWNLOADER BARU (SUDAH DIPERBAIKI) ---
+        // --- LOGIKA TIKTOK DOWNLOADER ---
         const downloadTiktokBtn = document.getElementById('downloadTiktokBtn');
         const tiktokUrlInput = document.getElementById('tiktokUrlInput');
-        const resultArea = document.getElementById('resultArea');
-        const videoPlayer = document.getElementById('tiktokVideoPlayer');
-        const videoTitle = document.getElementById('videoTitle');
-        const videoAuthor = document.getElementById('videoAuthor');
+        const tiktokResultArea = document.getElementById('resultArea');
+        const tiktokVideoPlayer = document.getElementById('tiktokVideoPlayer');
+        const tiktokVideoTitle = document.getElementById('videoTitle');
+        const tiktokVideoAuthor = document.getElementById('videoAuthor');
+        
+        const tiktokVideoLikes = document.getElementById('videoLikes');
+        const tiktokVideoViews = document.getElementById('videoViews');
+        const tiktokVideoComments = document.getElementById('videoComments');
+
         const btnVideoNowm = document.getElementById('btnVideoNowm');
         const btnMusic = document.getElementById('btnMusic');
         const tiktokStatusMessage = document.getElementById('tiktokStatusMessage');
 
-        downloadTiktokBtn.addEventListener('click', async () => {
-            const url = tiktokUrlInput.value.trim();
-            if (!url) {
-                alert('Silakan masukkan URL video TikTok.');
-                return;
-            }
-
-            tiktokStatusMessage.style.display = 'block';
-            tiktokStatusMessage.style.backgroundColor = 'rgba(0, 255, 242, 0.2)';
-            tiktokStatusMessage.style.color = 'var(--neon-cyan)';
-            tiktokStatusMessage.innerText = 'Sedang memproses, mohon tunggu...';
-            downloadTiktokBtn.disabled = true;
-            resultArea.style.display = 'none';
-            videoPlayer.pause();
-            videoPlayer.removeAttribute('src');
-
-            try {
-                const response = await fetch(TIKWM_API_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: new URLSearchParams({
-                        'url': url
-                    })
-                });
-                const data = await response.json();
-                
-                // Memeriksa respons dengan lebih teliti, seperti yang dilakukan bot Telegram Anda
-                if (data.status === 'success' && data.data && data.data.play) {
-                    const videoData = data.data;
-
-                    // Menggabungkan URL dasar dan path dari API
-                    const videoUrlNowm = `https://www.tikwm.com${videoData.play}`;
-                    const videoUrlHd = videoData.hdplay ? `https://www.tikwm.com${videoData.hdplay}` : videoUrlNowm;
-                    const musicUrl = videoData.music || '#';
-
-                    // Tampilkan area hasil
-                    resultArea.style.display = 'flex';
+        if (downloadTiktokBtn) {
+            downloadTiktokBtn.addEventListener('click', async () => {
+                const url = tiktokUrlInput.value.trim();
+                if (!url) {
+                    alert('Silakan masukkan URL video TikTok.');
+                    return;
+                }
+    
+                tiktokStatusMessage.style.display = 'block';
+                tiktokStatusMessage.style.backgroundColor = 'rgba(0, 255, 242, 0.2)';
+                tiktokStatusMessage.style.color = 'var(--neon-cyan)';
+                tiktokStatusMessage.innerText = 'Sedang memproses, mohon tunggu...';
+                downloadTiktokBtn.disabled = true;
+                tiktokResultArea.style.display = 'none';
+                tiktokVideoPlayer.pause();
+                tiktokVideoPlayer.removeAttribute('src');
+    
+                try {
+                    const response = await fetch(`${CUSTOM_API_URL}/download-tiktok?url=${encodeURIComponent(url)}`);
+                    const data = await response.json();
                     
-                    // Update player dan info
-                    videoPlayer.src = videoUrlHd;
-                    videoTitle.innerText = videoData.title || 'Tidak ada judul';
-                    videoAuthor.innerText = videoData.author.nickname || 'Tidak diketahui';
-
-                    // Update link download
-                    btnVideoNowm.href = videoUrlHd;
-                    btnVideoNowm.style.display = 'block';
-                    btnMusic.href = musicUrl;
-                    btnMusic.style.display = 'block';
-
-                    tiktokStatusMessage.style.display = 'none';
-
-                } else {
+                    if (response.ok && data.status === 'success' && data.data) {
+                        const tiktokData = data.data;
+                        
+                        tiktokResultArea.style.display = 'flex';
+                        
+                        tiktokVideoPlayer.src = tiktokData.play;
+                        tiktokVideoTitle.innerText = tiktokData.title || 'Tidak ada judul';
+                        tiktokVideoAuthor.innerText = tiktokData.author?.nickname || 'Tidak diketahui';
+    
+                        tiktokVideoViews.innerText = (tiktokData.play_count || 0).toLocaleString('id-ID');
+                        tiktokVideoLikes.innerText = (tiktokData.digg_count || 0).toLocaleString('id-ID');
+                        tiktokVideoComments.innerText = (tiktokData.comment_count || 0).toLocaleString('id-ID');
+    
+                        btnVideoNowm.href = tiktokData.play;
+                        btnVideoNowm.style.display = tiktokData.play ? 'block' : 'none';
+                        btnMusic.href = tiktokData.music;
+                        btnMusic.style.display = tiktokData.music ? 'block' : 'none';
+    
+                        tiktokStatusMessage.style.display = 'none';
+    
+                    } else {
+                        tiktokStatusMessage.style.backgroundColor = 'rgba(244, 67, 54, 0.2)';
+                        tiktokStatusMessage.style.color = '#f44336';
+                        tiktokStatusMessage.innerText = `❌ Gagal: ${data.message || 'Terjadi kesalahan tidak diketahui.'}`;
+                    }
+                } catch (error) {
+                    console.error('Download Error:', error);
                     tiktokStatusMessage.style.backgroundColor = 'rgba(244, 67, 54, 0.2)';
                     tiktokStatusMessage.style.color = '#f44336';
-                    tiktokStatusMessage.innerText = `❌ Gagal: ${data.msg || 'Terjadi kesalahan saat memproses link. Pastikan URL valid atau video tidak private.'}`;
+                    tiktokStatusMessage.innerText = '❌ Terjadi kesalahan saat menghubungi API.';
+                } finally {
+                    downloadTiktokBtn.disabled = false;
                 }
-            } catch (error) {
-                console.error('Download Error:', error);
-                tiktokStatusMessage.style.backgroundColor = 'rgba(244, 67, 54, 0.2)';
-                tiktokStatusMessage.style.color = '#f44336';
-                tiktokStatusMessage.innerText = '❌ Terjadi kesalahan saat menghubungi API.';
-            } finally {
-                downloadTiktokBtn.disabled = false;
-            }
-        });
-
+            });
+        }
+        
         setupCustomDropdowns();
     </script>
 </body>
